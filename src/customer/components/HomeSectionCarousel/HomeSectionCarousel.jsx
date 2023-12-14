@@ -11,7 +11,7 @@ const responsive = {
   1024: { items: 5.5 },
 };
 
-export const HomeSectionCarousel = () => {
+export const HomeSectionCarousel = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const data = [1, 1, 1, 1, 11, 1, 1, 1].map((item) => (
     <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
@@ -32,6 +32,9 @@ export const HomeSectionCarousel = () => {
 
   return (
     <div className="relative border px-4 lg:px-8 ">
+      <h2 className="text-2xl font-extrabold text-gray-800 py-5">
+        {props.sectionName}
+      </h2>
       <div className="relative p-5">
         <AliceCarousel
           mouseTracking

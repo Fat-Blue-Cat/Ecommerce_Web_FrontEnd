@@ -6,9 +6,9 @@ export const HomePage = () => {
     <div>
       <HomeCarousel></HomeCarousel>
       <div className="py-20 space-y-10 flex flex-col justify-center px-5 lg:px-10">
-        <HomeSectionCarousel></HomeSectionCarousel>
-        <HomeSectionCarousel></HomeSectionCarousel>
-        <HomeSectionCarousel></HomeSectionCarousel>
+        <HomeSectionCarousel sectionName={"Smart Phone"}></HomeSectionCarousel>
+        <HomeSectionCarousel sectionName={"Smart Phone"}></HomeSectionCarousel>
+        <HomeSectionCarousel sectionName="Smart Phone"></HomeSectionCarousel>
       </div>
     </div>
   );
