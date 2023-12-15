@@ -1,25 +1,12 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
 import { Fragment, useState } from "react";
-import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
+import { Dialog, Menu, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
   ShoppingBagIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const navigation = {
   categories: [
@@ -157,6 +144,22 @@ function classNames(...classes) {
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleUSerClick = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleCloseUserMenu = (e) => {
+    setAnchorEl(null);
+  };
+
+  const handleCategoryClick = (category, section, item, close) => {
+    navigate(`/${category.id}/${section.id}/${1}`);
+    close();
+  };
 
   return (
     <div className="bg-white">
@@ -318,7 +321,7 @@ export default function Navigation() {
                 </div>
 
                 <div className="border-t border-gray-200 px-4 py-6">
-                  <a href="#" className="-m-2 flex items-center p-2">
+                  {/* <a href="#" className="-m-2 flex items-center p-2">
                     <img
                       src="https://tailwindui.com/img/flags/flag-canada.svg"
                       alt=""
@@ -328,7 +331,48 @@ export default function Navigation() {
                       CAD
                     </span>
                     <span className="sr-only">, change currency</span>
-                  </a>
+                  </a> */}
+
+                  <Menu as="div" className="relative ml-3">
+                    <div>
+                      <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <span className="absolute -inset-1.5" />
+                        <span className="sr-only">Open user menu</span>
+                        <img
+                          className="h-8 w-8 rounded-full"
+                          // src="https://tailwindui.com/img/flags/flag-canada.svg"
+                          alt=""
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {[{ name: "Login" }, { name: "Logout" }].map((item) => (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <a
+                                href={item.href}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                1222222222222
+                              </a>
+                            )}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -336,16 +380,16 @@ export default function Navigation() {
         </Dialog>
       </Transition.Root>
 
-      <header className="relative bg-white z-50">
+      <header className="relative bg-white z-50 ">
         <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
           Get free delivery on orders over $100
         </p>
 
         <nav
           aria-label="Top"
-          className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 border-b border-gray-200 shadow-sm"
         >
-          <div className="border-b border-gray-200">
+          <div className="">
             <div className="flex h-16 items-center">
               <button
                 type="button"
@@ -358,7 +402,12 @@ export default function Navigation() {
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
+              <div
+                onClick={() => {
+                  navigate("/");
+                }}
+                className="ml-4 flex lg:ml-0"
+              >
                 <a href="#">
                   <span className="sr-only">Your Company</span>
                   <img
@@ -374,7 +423,7 @@ export default function Navigation() {
                 <div className="flex h-full space-x-8">
                   {navigation.categories.map((category) => (
                     <Popover key={category.name} className="flex">
-                      {({ open }) => (
+                      {({ open, close }) => (
                         <>
                           <div className="relative flex">
                             <Popover.Button
@@ -459,12 +508,19 @@ export default function Navigation() {
                                                 key={item.name}
                                                 className="flex"
                                               >
-                                                <a
-                                                  href={item.href}
-                                                  className="hover:text-gray-800"
+                                                <p
+                                                  onClick={() =>
+                                                    handleCategoryClick(
+                                                      category,
+                                                      section,
+                                                      item,
+                                                      close
+                                                    )
+                                                  }
+                                                  className="hover:text-gray-800 cursor-pointer"
                                                 >
                                                   {item.name}
-                                                </a>
+                                                </p>
                                               </li>
                                             ))}
                                           </ul>
@@ -511,7 +567,7 @@ export default function Navigation() {
                 </div>
 
                 <div className="hidden lg:ml-8 lg:flex">
-                  <a
+                  {/* <a
                     href="#"
                     className="flex items-center text-gray-700 hover:text-gray-800"
                   >
@@ -522,7 +578,85 @@ export default function Navigation() {
                     />
                     <span className="ml-3 block text-sm font-medium">CAD</span>
                     <span className="sr-only">, change currency</span>
-                  </a>
+                  </a> */}
+                  <Menu as="div" className="relative ml-3">
+                    <div>
+                      <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <span className="absolute -inset-1.5" />
+                        <span className="sr-only">Open user menu</span>
+                        <img
+                          // className="h-8 w-8 rounded-full"
+                          src="https://tailwindui.com/img/flags/flag-canada.svg"
+                          alt=""
+                          className="block h-auto w-5 flex-shrink-0"
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {/* {[{ name: "Login" }, { name: "Logout" }].map((item) => (
+                          <Menu.Item key={item.name}>
+                            {({ active }) => (
+                              <a
+                                href={item.href}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                {item.name}
+                              </a>
+                            )}
+                          </Menu.Item>
+                        ))} */}
+                        <Menu.Item key={1}>
+                          {({ active }) => (
+                            <a
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Profile
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item key={2}>
+                          {({ active }) => (
+                            <a
+                              onClick={() => navigate("/account/order")}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              My Orders
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item key={3}>
+                          {({ active }) => (
+                            <a
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              Logout
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 </div>
 
                 {/* Search */}
