@@ -3,6 +3,8 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
 import ProdcutReviewCard from "./ProdcutReviewCard";
+import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
+import { useNavigate } from "react-router-dom";
 // or
 
 const product = {
@@ -66,6 +68,11 @@ function classNames(...classes) {
 export default function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
+
+  const navigate = useNavigate();
+  const handlerAddToCart = () => {
+    navigate("/cart");
+  };
 
   return (
     <div className="bg-white lg:px-20">
@@ -287,6 +294,7 @@ export default function ProductDetails() {
                 </div>
 
                 <Button
+                  onClick={handlerAddToCart}
                   variant="contained"
                   sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd" }}
                 >
@@ -431,6 +439,17 @@ export default function ProductDetails() {
                 </Box>
               </Grid>
             </Grid>
+          </div>
+        </section>
+
+        {/*================== SIMILER PRODUCTS =========  */}
+        <section className="pt-10">
+          <h1 className="py-5 text-xl font-bold">Similer Products</h1>
+
+          <div className="flex flex-wrap space-y-5">
+            {[1, 1, 1, 1, 1, 1, 1, 1, 1].map((item) => (
+              <HomeSectionCard></HomeSectionCard>
+            ))}
           </div>
         </section>
       </div>
