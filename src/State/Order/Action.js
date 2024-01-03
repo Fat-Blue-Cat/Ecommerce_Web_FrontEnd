@@ -17,7 +17,6 @@ export const createrOrder = (reqData) => async (dispatch) => {
 
   try {
     const { data } = await api.post(`/api/orders/`, reqData.address);
-    console.log("DAAAAAAAATAAAAAA", data);
     if (data.id) {
       reqData.navigate({ search: `step=3&order_id=${data.id}` });
     }

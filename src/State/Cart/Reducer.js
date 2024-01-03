@@ -29,6 +29,7 @@ export const cartReducer = (state = initialState, action) => {
         cartItems: [...state.cartItems, action.payload.cartItems],
         loading: false,
         error: null,
+        addItemToCart: action.payload,
       };
     case ADD_ITEM_TO_CART_FAILURE:
       return { ...state, loading: false, error: action.payload };
@@ -55,12 +56,14 @@ export const cartReducer = (state = initialState, action) => {
         cartItems: state.cartItems.map((item) =>
           item.id === action.payload.id ? action.payload : item
         ),
+        updateCartItem: action.payload,
         loading: false,
         error: null,
       };
     case REMOVE_CART_ITEM_SUCCESS:
       return {
         ...state,
+        deleteCartItem: action.payload,
         cartItems: state.cartItems.filter((item) => item.id !== action.payload),
         loading: false,
         error: null,
