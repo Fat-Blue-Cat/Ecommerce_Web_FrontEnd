@@ -4,21 +4,21 @@ export default function ProductCard({ product }) {
   const navigate = useNavigate();
   return (
     <div
-      onClick={() => navigate(`/product/${1}`)}
+      onClick={() => navigate(`/product/${product.id}`)}
       className="productCard w-[15rem] m-3 transition-all cursor-pointer"
     >
       <div className="h-[20rem]">
         <img
-          className="h-full w-full object-cover object-left-top"
-          src="https://cdn.hoanghamobile.com/i/preview/Uploads/2023/09/13/iphone-15-pro-natural-titanium-pure-back-iphone-15-pro-natural-titanium-pure-front-2up-screen-usen.png"
+          className="h-full w-full  object-contain"
+          src={`${product.imageUrl}`}
           alt=""
         />
       </div>
 
       <div className="textPart bg-white p-3 ">
         <div>
-          <p className="font-bold opacity-60"> Iphone 15 pro max</p>
-          <p>{product.title}</p>
+          <p className="font-bold opacity-60"> {product.title}</p>
+          <p>{product.description}</p>
         </div>
 
         <div className="flex items-center space-x-2">
