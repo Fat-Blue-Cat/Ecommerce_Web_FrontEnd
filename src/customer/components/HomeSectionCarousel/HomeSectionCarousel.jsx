@@ -2,21 +2,51 @@ import AliceCarousel from "react-alice-carousel";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
 import { Button } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import { useState } from "react";
-import { mens_kurta } from "./menkuta";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { findProducts } from "../../../State/Products/Action";
 
 const responsive = {
   0: { items: 1 },
+  500: { items: 1.5 },
   720: { items: 2.5 },
-  1024: { items: 5.5 },
+  1024: { items: 4.5 },
 };
 
 export const HomeSectionCarousel = (props) => {
+  const { product } = useSelector((store) => store);
+  const listItems = product?.products?.content;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const data = {
+      category: props.data.category,
+      color: "",
+      memories: "",
+      minPrice: 0,
+      maxPrice: 100000000,
+      minDiscount: 0,
+      sort: "price_low",
+      pageNumber: 0,
+      pageSize: 10,
+      stock: "",
+    };
+
+    dispatch(findProducts(data));
+  }, []);
+
   const [activeIndex, setActiveIndex] = useState(0);
-  const data = [1, 1, 1, 1, 11, 1, 1, 1].map((item) => (
-    <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
-  ));
-  const [items] = useState(data);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    if (listItems) {
+      const updatedItems = listItems.map((item) => (
+        <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
+      ));
+      setItems(updatedItems);
+    }
+  }, [listItems]);
 
   const slidePrev = () => {
     setActiveIndex(activeIndex - 1);
@@ -53,7 +83,7 @@ export const HomeSectionCarousel = (props) => {
           onClick={slidePrev}
           sx={{
             position: "absolute",
-            top: "8rem",
+            top: "50%",
             left: "-2rem",
             transform: "rotate(90deg)",
             bgcolor: "white",
@@ -66,14 +96,14 @@ export const HomeSectionCarousel = (props) => {
           ></KeyboardArrowLeftIcon>
         </Button>
       )}
-      {activeIndex !== items.length - 5 && (
+      {activeIndex !== items?.length - 5 && (
         <Button
           onClick={slideNext}
           variant="contained"
           className="z-50 bg-white"
           sx={{
             position: "absolute",
-            top: "8rem",
+            top: "50%",
             right: "0rem",
             transform: "translateX(50%) rotate(90deg)",
             bgcolor: "white",
