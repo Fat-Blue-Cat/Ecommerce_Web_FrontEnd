@@ -1,18 +1,4 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -23,16 +9,19 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import ProductCard from "./ProductCard";
-import { mens_kurta } from "../HomeSectionCarousel/menkuta";
 import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Pagination,
   Radio,
   RadioGroup,
+  Stack,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { findProducts } from "../../../State/Products/Action";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -51,7 +40,7 @@ const subCategories = [
 const filters2 = [
   {
     id: "color",
-    name: "color",
+    name: "Color",
     options: [
       { value: "white", label: "White", checked: false },
       { value: "beige", label: "Beige", checked: false },
@@ -64,38 +53,36 @@ const filters2 = [
 ];
 const filters = [
   {
-    id: "color",
-    name: "Color",
+    id: "price",
+    name: "Price",
     options: [
-      { value: "white", label: "White", checked: false },
-      { value: "beige", label: "Beige", checked: false },
-      { value: "blue", label: "Blue", checked: false },
-      { value: "brown", label: "Brown", checked: false },
-      { value: "green", label: "Green", checked: false },
-      { value: "purple", label: "Purple", checked: false },
+      { value: "200-1000", label: "200$ to 1000$", checked: false },
+      { value: "1000-2000", label: "1000$ to 2000$", checked: false },
+    ],
+  },
+  {
+    id: "memory",
+    name: "Memory",
+    options: [
+      { value: "4/64gb", label: "4/64gb", checked: false },
+      { value: "4/128gb", label: "4/128gb", checked: false },
+      { value: "4/526gb", label: "4/526gb", checked: false },
     ],
   },
   {
     id: "category",
     name: "Category",
     options: [
-      { value: "new-arrivals", label: "New Arrivals", checked: false },
-      { value: "sale", label: "Sale", checked: false },
-      { value: "travel", label: "Travel", checked: false },
-      { value: "organization", label: "Organization", checked: false },
-      { value: "accessories", label: "Accessories", checked: false },
+      { value: "phone", label: "Phone", checked: false },
+      { value: "computer", label: "Computer", checked: false },
     ],
   },
   {
-    id: "size",
-    name: "Size",
+    id: "brand",
+    name: "Brand",
     options: [
-      { value: "2l", label: "2L", checked: false },
-      { value: "6l", label: "6L", checked: false },
-      { value: "12l", label: "12L", checked: false },
-      { value: "18l", label: "18L", checked: false },
-      { value: "20l", label: "20L", checked: false },
-      { value: "40l", label: "40L", checked: false },
+      { value: "iphone", label: "Iphone", checked: false },
+      { value: "samsung", label: "Samsung", checked: false },
     ],
   },
 ];
@@ -108,12 +95,25 @@ export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const param = useParams();
+  const dispatch = useDispatch();
+  const { product } = useSelector((store) => store);
+
+  const decodeQueryString = decodeURIComponent(location.search);
+  const searchParams = new URLSearchParams(decodeQueryString);
+  const colorValue = searchParams.get("color");
+  const memoryValue = searchParams.get("memory");
+  const priceValue = searchParams.get("price");
+  const discount = searchParams.get("discount");
+  const sortValue = searchParams.get("sort");
+  const pageNumber = searchParams.get("page") || 1;
+  const stock = searchParams.get("stock");
 
   const handleFilter = (value, sectionId) => {
     const searchParams = new URLSearchParams(location.search);
 
     let filterValue = searchParams.getAll(sectionId);
-
+    console.log(filterValue);
     if (filterValue.length > 0 && filterValue[0].split(",").includes(value)) {
       filterValue = filterValue[0].split(",").filter((item) => item !== value);
 
@@ -140,6 +140,41 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
+  const handlePaginationChange = (event, value) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("page", value);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
+
+  useEffect(() => {
+    const [minPrice, maxPrice] =
+      priceValue === null ? [0, 1000000] : priceValue.split("-").map(Number);
+    const data = {
+      category: param.LevelThree,
+      color: colorValue || [],
+      memories: memoryValue || [],
+      minPrice,
+      maxPrice,
+      minDiscount: discount || 0,
+      sort: sortValue || "price_low",
+      pageNumber: pageNumber - 1,
+      pageSize: 1,
+      stock: stock,
+    };
+    console.log("=========", data);
+
+    dispatch(findProducts(data));
+  }, [
+    param.LevelThree,
+    colorValue,
+    memoryValue,
+    priceValue,
+    discount,
+    sortValue,
+    pageNumber,
+    stock,
+  ]);
   return (
     <div className="bg-white">
       <div>
@@ -493,12 +528,31 @@ export default function Product() {
 
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
-                <div className="flex flex-wrap justify-center bg-white py-5">
-                  {mens_kurta.map((item) => (
-                    <ProductCard product={item}></ProductCard>
-                  ))}
-                </div>
+                {location.pathname === "/product" ? (
+                  <div className="flex flex-wrap justify-center bg-white py-5">
+                    {product.listProducts?.content?.map((item) => (
+                      <ProductCard product={item}></ProductCard>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap justify-center bg-white py-5">
+                    {product.products?.content?.map((item) => (
+                      <ProductCard product={item}></ProductCard>
+                    ))}
+                  </div>
+                )}
               </div>
+            </div>
+          </section>
+          <section className="w-full px-[3.6rem]">
+            <div className="px-4 py-5 flex justify-center">
+              <Stack spacing={2}>
+                <Pagination
+                  count={parseInt(product?.products?.totalPages)}
+                  color="primary"
+                  onChange={handlePaginationChange}
+                />
+              </Stack>
             </div>
           </section>
         </main>
