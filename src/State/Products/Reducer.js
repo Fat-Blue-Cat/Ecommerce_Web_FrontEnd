@@ -5,6 +5,9 @@ import {
   FIND_PRODUCT_BY_ID_FAILURE,
   FIND_PRODUCT_BY_ID_REQUEST,
   FIND_PRODUCT_BY_ID_SUCCESS,
+  FIND_PRODUCT_BY_NAME_FAILURE,
+  FIND_PRODUCT_BY_NAME_REQUEST,
+  FIND_PRODUCT_BY_NAME_SUCCESS,
 } from "./ActionType";
 
 const initialState = {
@@ -18,6 +21,7 @@ export const customerProductReducer = (state = initialState, action) => {
   switch (action.type) {
     case FIND_PRODUCTS_REQUEST:
     case FIND_PRODUCT_BY_ID_REQUEST:
+    case FIND_PRODUCT_BY_NAME_REQUEST:
       return { ...state, loading: true, error: null };
     case FIND_PRODUCTS_SUCCESS:
       return {
@@ -26,6 +30,7 @@ export const customerProductReducer = (state = initialState, action) => {
         error: null,
         products: action.payload,
       };
+
     case FIND_PRODUCT_BY_ID_SUCCESS:
       return {
         ...state,
@@ -33,8 +38,17 @@ export const customerProductReducer = (state = initialState, action) => {
         error: null,
         product: action.payload,
       };
+
+    case FIND_PRODUCT_BY_NAME_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        listProducts: action.payload,
+      };
     case FIND_PRODUCTS_FAILURE:
     case FIND_PRODUCT_BY_ID_FAILURE:
+    case FIND_PRODUCT_BY_NAME_FAILURE:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
