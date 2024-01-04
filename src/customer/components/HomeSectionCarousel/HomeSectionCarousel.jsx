@@ -14,39 +14,17 @@ const responsive = {
 };
 
 export const HomeSectionCarousel = (props) => {
-  const { product } = useSelector((store) => store);
-  const listItems = product?.products?.content;
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const data = {
-      category: props.data.category,
-      color: "",
-      memories: "",
-      minPrice: 0,
-      maxPrice: 100000000,
-      minDiscount: 0,
-      sort: "price_low",
-      pageNumber: 0,
-      pageSize: 10,
-      stock: "",
-    };
-
-    dispatch(findProducts(data));
-  }, []);
-
+  console.log(props);
   const [activeIndex, setActiveIndex] = useState(0);
   const [items, setItems] = useState([]);
 
+  console.log(props);
   useEffect(() => {
-    if (listItems) {
-      const updatedItems = listItems.map((item) => (
-        <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
-      ));
-      setItems(updatedItems);
-    }
-  }, [listItems]);
+    const updatedItems = props?.data?.content?.map((item) => (
+      <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
+    ));
+    setItems(updatedItems);
+  }, [props]);
 
   const slidePrev = () => {
     setActiveIndex(activeIndex - 1);
@@ -63,7 +41,7 @@ export const HomeSectionCarousel = (props) => {
   return (
     <div className="relative border px-4 lg:px-8 ">
       <h2 className="text-2xl font-extrabold text-gray-800 py-5">
-        {props.sectionName}
+        {props?.item?.name}
       </h2>
       <div className="relative p-5">
         <AliceCarousel
