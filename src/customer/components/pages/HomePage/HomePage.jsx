@@ -6,11 +6,14 @@ import { BrandCarousel } from "../../BrandCarousel/BrandCarousel";
 import { Footer } from "../../Footer/Footer";
 import { useLocation } from "react-router-dom";
 import AuthModal from "../../../Auth/AuthModal";
-import { findProducts } from "../../../../State/Products/Action";
+import {
+  findProductByCategory,
+  findProducts,
+} from "../../../../State/Products/Action";
 import { api } from "../../../../config/apiConfig";
 
-export const HomePage = () => {
-  const data1 = {
+export const changeCategory = (newCategory) => {
+  const data = {
     category: "phone",
     color: "",
     memories: "",
@@ -22,25 +25,22 @@ export const HomePage = () => {
     pageSize: 10,
     stock: "",
   };
-  const [category1, setcategory1] = useState([]);
-  const [category2, setcategory2] = useState([]);
-  const getData = (category, categoryData) => {
-    const { data } = api
-      .get(
-        `/api/products?color=${data1.color}&memories=${data1.memories}&minPrice=${data1.minPrice}&maxPrice=${data1.maxPrice}&minDiscount=${data1.minDiscount}&category=${category}&stock=${data1.stock}&sort=${data1.sort}&pageNumber=${data1.pageNumber}&pageSize=${data1.pageSize}                
-    `
-      )
-      .then(function (response) {
-        categoryData(response.data);
-      });
-  };
+  data.category = newCategory;
+  return data;
+};
 
-  console.log(category1);
-  console.log(category2);
-
+export const HomePage = () => {
+  const location = useLocation();
+  console.log(location);
+  const dispatch = useDispatch();
+  const { product } = useSelector((store) => store);
+  console.log(product);
+  if (location.pathname === "/about") {
+    window.scrollTo(0, document.body.scrollHeight);
+  }
   useEffect(() => {
-    getData("phone", setcategory1);
-    getData("laptop", setcategory2);
+    dispatch(findProductByCategory(changeCategory("phone")));
+    dispatch(findProductByCategory(changeCategory("laptop")));
   }, []);
 
   return (
@@ -48,11 +48,11 @@ export const HomePage = () => {
       <HomeCarousel></HomeCarousel>
       <div className="py-20 space-y-10 flex flex-col justify-center px-5 lg:px-10">
         <HomeSectionCarousel
-          data={category1}
+          data={product?.phone}
           item={{ name: "Smart Phone" }}
         ></HomeSectionCarousel>
         <HomeSectionCarousel
-          data={category2}
+          data={product?.laptop}
           item={{ name: "Laptop" }}
         ></HomeSectionCarousel>
       </div>
