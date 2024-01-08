@@ -47,7 +47,7 @@ export const customerProductReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        listProducts: action.payload,
+        products: action.payload,
       };
 
     case FIND_PRODUCT_BY_CATEGORY_SUCCESS:
