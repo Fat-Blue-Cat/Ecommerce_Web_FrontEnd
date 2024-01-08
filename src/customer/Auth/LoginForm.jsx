@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
 import { Button, Grid, TextField } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, login } from "../../State/Auth/Action";
 
@@ -14,7 +18,7 @@ const LoginForm = () => {
     if (jwt) {
       dispatch(getUser());
     }
-  }, [auth.jwt, jwt]);
+  }, [auth.jwt, dispatch, jwt]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,6 +29,7 @@ const LoginForm = () => {
       email: data.get("email"),
     };
     dispatch(login(userData));
+    window.history.back();
   };
 
   return (

@@ -7,8 +7,10 @@ import { Button, IconButton } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { removeItemToCart, updateItemToCart } from "../../../State/Cart/Action";
+import { useNavigate } from "react-router-dom";
 
 const CartItem = ({ item }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleUpdateCartItem = (num) => {
     const data = {
@@ -27,6 +29,7 @@ const CartItem = ({ item }) => {
       <div className="flex items-center">
         <div className="w-[5rem] h-[5rem] lg:w-[9rem] lg:h-[9rem]">
           <img
+            onClick={() => navigate(`/product/${item.product.id}`)}
             className="w-full h-full object-cover object-top"
             src={item?.product?.imageUrl}
             alt=""

@@ -12,6 +12,7 @@ const Cart = () => {
   const handleCheckOut = () => {
     navigate("/checkout?step=2");
   };
+
   console.log(cart);
   useEffect(() => {
     dispatch(getCart());
@@ -22,7 +23,10 @@ const Cart = () => {
       <div className="lg:grid grid-cols-3 lg:px-16 relative py-10">
         <div className="col-span-2">
           {cart?.cart?.cartItems?.map((item) => (
-            <CartItem item={item}></CartItem>
+            <CartItem
+              onClick={() => console.log("HEEEEEEE")}
+              item={item}
+            ></CartItem>
           ))}
         </div>
         <div className="px-5 sticky top-0 h-[100vh] mt-5 lg:mt-0">
