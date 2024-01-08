@@ -10,20 +10,20 @@ const responsive = {
   0: { items: 1 },
   500: { items: 1.5 },
   720: { items: 2.5 },
-  1024: { items: 4.5 },
+  1024: { items: 5.5 },
 };
 
 export const HomeSectionCarousel = (props) => {
-  console.log(props);
   const [activeIndex, setActiveIndex] = useState(0);
   const [items, setItems] = useState([]);
 
-  console.log(props);
+  console.log(props?.data);
   useEffect(() => {
     const updatedItems = props?.data?.content?.map((item) => (
       <HomeSectionCard key={item.id} product={item}></HomeSectionCard>
     ));
     setItems(updatedItems);
+    console.log(items);
   }, [props]);
 
   const slidePrev = () => {
