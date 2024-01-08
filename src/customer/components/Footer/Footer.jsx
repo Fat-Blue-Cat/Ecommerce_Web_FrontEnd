@@ -4,7 +4,7 @@ export const Footer = () => {
   return (
     <div>
       <Grid
-        className="bg-black text-white text-center mt-10"
+        className="bg-black text-white text-center mt-10 "
         container
         sx={{ bgcolor: "black", color: "white", py: 3 }}
         rowGap={{ sm: 10 }}
@@ -114,10 +114,10 @@ export const Footer = () => {
       <Grid>
         <Grid className="pt-20" item xs={12}>
           <Typography variant="body2" component="p" align="center">
-            &copy: 2023 My Company. All right s reserved.
+            &copy: 2024 My Company. All right s reserved.
           </Typography>
           <Typography variant="body2" component="p" align="center">
-            Made with love by Me.
+            Made with love by FatBlue-Cat.
           </Typography>
           <Typography variant="body2" component="p" align="center">
             Icon made by{" "}
