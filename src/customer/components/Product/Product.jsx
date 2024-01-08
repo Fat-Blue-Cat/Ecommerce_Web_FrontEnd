@@ -21,33 +21,26 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { findProducts } from "../../../State/Products/Action";
+import {
+  findProducts,
+  findProductsByName,
+} from "../../../State/Products/Action";
+import { DataArray } from "@mui/icons-material";
 
 const sortOptions = [
-  { name: "Most Popular", href: "#", current: true },
-  { name: "Best Rating", href: "#", current: false },
-  { name: "Newest", href: "#", current: false },
-  { name: "Price: Low to High", href: "#", current: false },
-  { name: "Price: High to Low", href: "#", current: false },
+  { name: "Price: Low to High", href: "price_low", current: false },
+  { name: "Price: High to Low", href: "price_high", current: false },
 ];
-const subCategories = [
-  { name: "Totes", href: "#" },
-  { name: "Backpacks", href: "#" },
-  { name: "Travel Bags", href: "#" },
-  { name: "Hip Bags", href: "#" },
-  { name: "Laptop Sleeves", href: "#" },
-];
+
 const filters2 = [
   {
     id: "color",
     name: "Color",
     options: [
       { value: "white", label: "White", checked: false },
-      { value: "beige", label: "Beige", checked: false },
+      { value: "black", label: "Black", checked: false },
       { value: "blue", label: "Blue", checked: false },
-      { value: "brown", label: "Brown", checked: false },
-      { value: "green", label: "Green", checked: false },
-      { value: "purple", label: "Purple", checked: false },
+      { value: "yellow", label: "Yellow", checked: false },
     ],
   },
 ];
@@ -58,6 +51,7 @@ const filters = [
     options: [
       { value: "200-1000", label: "200$ to 1000$", checked: false },
       { value: "1000-2000", label: "1000$ to 2000$", checked: false },
+      { value: "2000-10000", label: "2000$ to 10000$", checked: false },
     ],
   },
   {
@@ -67,22 +61,6 @@ const filters = [
       { value: "4/64gb", label: "4/64gb", checked: false },
       { value: "4/128gb", label: "4/128gb", checked: false },
       { value: "4/526gb", label: "4/526gb", checked: false },
-    ],
-  },
-  {
-    id: "category",
-    name: "Category",
-    options: [
-      { value: "phone", label: "Phone", checked: false },
-      { value: "computer", label: "Computer", checked: false },
-    ],
-  },
-  {
-    id: "brand",
-    name: "Brand",
-    options: [
-      { value: "iphone", label: "Iphone", checked: false },
-      { value: "samsung", label: "Samsung", checked: false },
     ],
   },
 ];
@@ -99,6 +77,42 @@ export default function Product() {
   const dispatch = useDispatch();
   const { product } = useSelector((store) => store);
 
+  filters[1] =
+    location.pathname.toLocaleLowerCase() === "/product"
+      ? {
+          id: "memory",
+          name: "Memory",
+          options: [
+            { value: "4/64gb", label: "4/64gb", checked: false },
+            { value: "4/128gb", label: "4/128gb", checked: false },
+            { value: "4/256gb", label: "6/128gb", checked: false },
+            { value: "8/500gb", label: "8/500gb", checked: false },
+            { value: "16/500gb", label: "16/500gb", checked: false },
+            { value: "8/1TB", label: "8/1TB", checked: false },
+            { value: "16/1TB", label: "16/1TB", checked: false },
+          ],
+        }
+      : location.pathname.toLocaleLowerCase().includes("/product/phone")
+      ? {
+          id: "memory",
+          name: "Memory",
+          options: [
+            { value: "4/64gb", label: "4/64gb", checked: false },
+            { value: "4/128gb", label: "4/128gb", checked: false },
+            { value: "4/256gb", label: "6/128gb", checked: false },
+          ],
+        }
+      : {
+          id: "memory",
+          name: "Memory",
+          options: [
+            { value: "8/500gb", label: "8/500gb", checked: false },
+            { value: "16/500gb", label: "16/500gb", checked: false },
+            { value: "8/1TB", label: "8/1TB", checked: false },
+            { value: "16/1TB", label: "16/1TB", checked: false },
+          ],
+        };
+
   const decodeQueryString = decodeURIComponent(location.search);
   const searchParams = new URLSearchParams(decodeQueryString);
   const colorValue = searchParams.get("color");
@@ -113,7 +127,6 @@ export default function Product() {
     const searchParams = new URLSearchParams(location.search);
 
     let filterValue = searchParams.getAll(sectionId);
-    console.log(filterValue);
     if (filterValue.length > 0 && filterValue[0].split(",").includes(value)) {
       filterValue = filterValue[0].split(",").filter((item) => item !== value);
 
@@ -128,7 +141,6 @@ export default function Product() {
       searchParams.set(sectionId, filterValue.join(","));
     }
     const query = searchParams.toString();
-    console.log(query);
     navigate({ search: `?${query}` });
   };
 
@@ -147,6 +159,13 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
+  const handleSortChange = (e, sortValue) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("sort", sortValue);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
+
   useEffect(() => {
     const [minPrice, maxPrice] =
       priceValue === null ? [0, 1000000] : priceValue.split("-").map(Number);
@@ -159,11 +178,14 @@ export default function Product() {
       minDiscount: discount || 0,
       sort: sortValue || "price_low",
       pageNumber: pageNumber - 1,
-      pageSize: 1,
+      pageSize: 8,
       stock: stock,
     };
-    console.log("=========", data);
 
+    if (location.pathname === "/product") {
+      data.category = "";
+      dispatch(findProducts(data));
+    }
     dispatch(findProducts(data));
   }, [
     param.LevelThree,
@@ -225,18 +247,6 @@ export default function Product() {
                   {/* Filters */}
                   <form className="mt-4 border-t border-gray-200">
                     <h3 className="sr-only">Categories</h3>
-                    <ul
-                      role="list"
-                      className="px-2 py-3 font-medium text-gray-900"
-                    >
-                      {subCategories.map((category) => (
-                        <li key={category.name}>
-                          <a href={category.href} className="block px-2 py-3">
-                            {category.name}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
 
                     {filters.map((section) => (
                       <Disclosure
@@ -339,7 +349,8 @@ export default function Product() {
                         <Menu.Item key={option.name}>
                           {({ active }) => (
                             <a
-                              href={option.href}
+                              // href={option.href}
+                              onClick={(e) => handleSortChange(e, option.href)}
                               className={classNames(
                                 option.current
                                   ? "font-medium text-gray-900"
@@ -528,19 +539,19 @@ export default function Product() {
 
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
-                {location.pathname === "/product" ? (
+                {/* {location.pathname === "/product" ? (
                   <div className="flex flex-wrap justify-center bg-white py-5">
                     {product.listProducts?.content?.map((item) => (
                       <ProductCard product={item}></ProductCard>
                     ))}
                   </div>
-                ) : (
-                  <div className="flex flex-wrap justify-center bg-white py-5">
-                    {product.products?.content?.map((item) => (
-                      <ProductCard product={item}></ProductCard>
-                    ))}
-                  </div>
-                )}
+                ) : ( */}
+                <div className="flex flex-wrap justify-center bg-white py-5">
+                  {product.products?.content?.map((item) => (
+                    <ProductCard product={item}></ProductCard>
+                  ))}
+                </div>
+                {/* )} */}
               </div>
             </div>
           </section>

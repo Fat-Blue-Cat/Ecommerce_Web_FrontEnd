@@ -4,18 +4,20 @@ import { RadioGroup } from "@headlessui/react";
 import { Box, Button, Grid, LinearProgress, Rating } from "@mui/material";
 import ProdcutReviewCard from "./ProdcutReviewCard";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { findProductsById } from "../../../State/Products/Action";
+import {
+  findProductByCategory,
+  findProductsById,
+} from "../../../State/Products/Action";
 import { addItemToCart } from "../../../State/Cart/Action";
 import { HomeSectionCarousel } from "../HomeSectionCarousel/HomeSectionCarousel";
 import { Footer } from "../Footer/Footer";
+import { changeCategory } from "../pages/HomePage/HomePage";
+import AuthModal from "../../Auth/AuthModal";
+import { showAlert } from "../../../State/Alert/Action";
 
 const product = {
-  name: "Basic Tee 6-Pack",
-  price: "$192",
-  href: "#",
-
   images: [
     {
       src: "https://tailwindui.com/img/ecommerce-images/product-page-02-secondary-product-shot.jpg",
@@ -34,31 +36,14 @@ const product = {
       alt: "Model wearing plain white basic tee.",
     },
   ],
-  colors: [
-    { name: "White", class: "bg-white", selectedClass: "ring-gray-400" },
-    { name: "Gray", class: "bg-gray-200", selectedClass: "ring-gray-400" },
-    { name: "Black", class: "bg-gray-900", selectedClass: "ring-gray-900" },
-  ],
-  sizes: [
-    { name: "XXS", inStock: false },
-    { name: "XS", inStock: true },
-    { name: "S", inStock: true },
-    { name: "M", inStock: true },
-    { name: "L", inStock: true },
-    { name: "XL", inStock: true },
-    { name: "2XL", inStock: true },
-    { name: "3XL", inStock: true },
-  ],
-  description:
-    'The Basic Tee 6-Pack allows you to fully express your vibrant personality with three grayscale options. Feeling adventurous? Put on a heather gray tee. Want to be a trendsetter? Try our exclusive colorway: "Black". Need to add an extra pop of color to your outfit? Our white tee has you covered.',
+
   highlights: [
-    "Hand cut and sewn locally",
-    "Dyed with our proprietary colors",
-    "Pre-washed & pre-shrunk",
-    "Ultra-soft 100% cotton",
+    "Affordable Price",
+    "High Performance",
+    "Long-Term Warranty",
+    "High Technology",
   ],
-  details:
-    'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
+  details: "The product with multifunctionality.",
 };
 const reviews = { href: "#", average: 4, totalCount: 117 };
 
@@ -69,14 +54,20 @@ function classNames(...classes) {
 export default function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedMemory, setSelectedMemory] = useState("");
+
   const params = useParams();
   const dispatch = useDispatch();
-  const { product: product1,auth } = useSelector((store) => store);
+  const { product: product1, auth } = useSelector((store) => store);
   const navigate = useNavigate();
+
   const handlerAddToCart = () => {
-    const data = { productId: params.productId, memory: selectedMemory };
-    dispatch(addItemToCart(data));
-    navigate("/cart");
+    if (selectedMemory === "") {
+      dispatch(showAlert("Please select memory", "warning"));
+    } else {
+      const data = { productId: params.productId, memory: selectedMemory };
+      dispatch(addItemToCart(data));
+      navigate("/cart");
+    }
   };
 
   const breadcrumbs = [
@@ -84,12 +75,15 @@ export default function ProductDetails() {
     {
       id: 2,
       name: `${product1.product?.category?.parentCategory?.name}`,
-      href: `/product/phone/${product1?.product?.category?.parentCategory?.name}`,
+      href: `/product/${product1?.product?.category?.parentCategory?.name}/${product1?.product?.category?.parentCategory?.name}`,
     },
   ];
+  console.log(breadcrumbs[1]);
+  console.log(product1[breadcrumbs[1].name]);
 
   useEffect(() => {
     dispatch(findProductsById(params.productId));
+    dispatch(findProductByCategory(changeCategory(breadcrumbs[1].name)));
     window.scrollTo(0, 0);
   }, [params.productId]);
   return (
@@ -255,11 +249,12 @@ export default function ProductDetails() {
                       value={selectedMemory}
                       onChange={setSelectedMemory}
                       className="mt-4"
+                      required
                     >
                       <RadioGroup.Label className="sr-only">
                         Choose a size
                       </RadioGroup.Label>
-                      <div className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
+                      <div className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-6">
                         {product1?.product?.memories?.map((memory) => (
                           <RadioGroup.Option
                             key={memory.name}
@@ -268,7 +263,7 @@ export default function ProductDetails() {
                             className={({ active }) =>
                               classNames(
                                 memory.quantity > 0
-                                  ? "cursor-pointer bg-white text-gray-900 shadow-sm"
+                                  ? "cursor-pointer bg-white text-gray-900 shadow-sm h-[2rem] "
                                   : "cursor-not-allowed bg-gray-50 text-gray-200",
                                 active ? "ring-2 ring-indigo-500" : "",
                                 "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6"
@@ -323,9 +318,13 @@ export default function ProductDetails() {
                   <Button
                     onClick={handlerAddToCart}
                     variant="contained"
-                    sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd" }}
+                    sx={{
+                      px: "2rem",
+                      py: "1rem",
+                      mt: "2rem",
+                      bgcolor: "#9155fd",
+                    }}
                   >
-                    {" "}
                     ADD TO CART
                   </Button>
                 </form>
@@ -499,10 +498,7 @@ export default function ProductDetails() {
             <h1 className="py-5 text-xl font-bold">Similer Products</h1>
 
             <HomeSectionCarousel
-              sectionName="Smart Phone"
-              data={{
-                category: "phone",
-              }}
+              data={product1[breadcrumbs[1].name]}
             ></HomeSectionCarousel>
           </section>
         </div>
