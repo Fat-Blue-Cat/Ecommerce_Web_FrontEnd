@@ -19,9 +19,6 @@ function App() {
       <Routes>
         <Route path="/*" element={<CustomerRouters></CustomerRouters>}></Route>
       </Routes>
-      {/* <Navigation></Navigation> */}
-      <div>{/* <HomePage></HomePage> */}</div>
-      <Footer></Footer>
     </div>
   );
 }
