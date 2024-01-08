@@ -10,7 +10,7 @@ const responsive = {
   0: { items: 1 },
   500: { items: 1.5 },
   720: { items: 2.5 },
-  1024: { items: 5.5 },
+  1024: { items: 4.5 },
 };
 
 export const HomeSectionCarousel = (props) => {
