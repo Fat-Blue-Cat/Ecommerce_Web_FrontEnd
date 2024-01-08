@@ -503,7 +503,6 @@ export default function ProductDetails() {
           </section>
         </div>
       </div>
-      <Footer></Footer>
     </div>
   );
 }

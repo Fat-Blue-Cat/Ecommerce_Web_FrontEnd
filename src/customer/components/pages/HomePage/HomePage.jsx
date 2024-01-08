@@ -69,7 +69,6 @@ export const HomePage = () => {
       <div className="shadow-2xl opacity-80 border border-2">
         <BrandCarousel></BrandCarousel>
       </div>
-      <Footer></Footer>
     </div>
   );
 };
