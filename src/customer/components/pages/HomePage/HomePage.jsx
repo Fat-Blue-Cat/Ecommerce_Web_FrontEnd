@@ -5,12 +5,11 @@ import { useEffect, useState } from "react";
 import { BrandCarousel } from "../../BrandCarousel/BrandCarousel";
 import { Footer } from "../../Footer/Footer";
 import { useLocation } from "react-router-dom";
-import AuthModal from "../../../Auth/AuthModal";
 import {
   findProductByCategory,
   findProducts,
 } from "../../../../State/Products/Action";
-import { api } from "../../../../config/apiConfig";
+import { Button } from "@mui/material";
 
 export const changeCategory = (newCategory) => {
   const data = {
@@ -34,18 +33,23 @@ export const HomePage = () => {
   console.log(location);
   const dispatch = useDispatch();
   const { product } = useSelector((store) => store);
-  console.log(product);
+
+  const [openModal, setOpenModal] = useState(false);
   if (location.pathname === "/about") {
     window.scrollTo(0, document.body.scrollHeight);
   }
+
   useEffect(() => {
     dispatch(findProductByCategory(changeCategory("phone")));
     dispatch(findProductByCategory(changeCategory("laptop")));
+    dispatch(findProductByCategory(changeCategory("tablet")));
   }, []);
 
   return (
     <div>
-      <HomeCarousel></HomeCarousel>
+      <div className="relative">
+        <HomeCarousel></HomeCarousel>
+      </div>
       <div className="py-20 space-y-10 flex flex-col justify-center px-5 lg:px-10">
         <HomeSectionCarousel
           data={product?.phone}
@@ -54,6 +58,11 @@ export const HomePage = () => {
         <HomeSectionCarousel
           data={product?.laptop}
           item={{ name: "Laptop" }}
+        ></HomeSectionCarousel>
+
+        <HomeSectionCarousel
+          data={product?.tablet}
+          item={{ name: "tablet" }}
         ></HomeSectionCarousel>
       </div>
 
