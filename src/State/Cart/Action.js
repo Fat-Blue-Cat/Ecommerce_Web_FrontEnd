@@ -14,6 +14,7 @@ import {
   UPDATE_CART_ITEM_REQUEST,
   UPDATE_CART_ITEM_SUCCESS,
 } from "./ActionType";
+import { showAlert } from "../Alert/Action";
 
 export const getCart = () => async (dispatch) => {
   dispatch({ type: GET_CART_REQUEST });
@@ -31,6 +32,7 @@ export const addItemToCart = (reqData) => async (dispatch) => {
 
   try {
     const { data } = await api.put("/api/cart/add", reqData);
+    dispatch(showAlert("Item added to cart!", "success"));
     dispatch({ type: ADD_ITEM_TO_CART_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: ADD_ITEM_TO_CART_FAILURE, payload: error.message });
@@ -54,19 +56,15 @@ export const removeItemToCart = (cartItemId) => async (dispatch) => {
 
 export const updateItemToCart = (reqData) => async (dispatch) => {
   dispatch({ type: UPDATE_CART_ITEM_REQUEST });
-  console.log("RUNNNN");
-  console.log(reqData);
+
   try {
     const { data } = await api.put(
       `/api/cart_items/${reqData.cartItemId}`,
       reqData.data
     );
-    console.log("COMPLETE");
-    console.log(data);
+
     dispatch({ type: UPDATE_CART_ITEM_SUCCESS, payload: data });
   } catch (error) {
-    console.log("ERROR");
-
     dispatch({ type: UPDATE_CART_ITEM_FAILURE, payload: error.message });
   }
 };

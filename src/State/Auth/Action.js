@@ -12,6 +12,7 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
 } from "./ActionType";
+import { showAlert } from "../Alert/Action";
 
 const token = localStorage.getItem("jwt");
 const registerRequest = () => ({ type: REGISTER_REQUEST });
@@ -27,9 +28,10 @@ export const register = (userData) => async (dispatch) => {
     if (user.jwt) {
       localStorage.setItem("jwt", user.jwt);
     }
-    console.log("user", user);
+    dispatch(showAlert("Sign Up Success!!", "success"));
     dispatch(registerSuccess(user.jwt));
   } catch (error) {
+    dispatch(showAlert(error.message, "error"));
     dispatch(registerFailure(error.message));
   }
 };
@@ -46,11 +48,12 @@ export const login = (userData) => async (dispatch) => {
     const user = response.data;
     if (user.jwt) {
       localStorage.setItem("jwt", user.jwt);
+      dispatch(showAlert("Logged in successfully", "success"));
     }
-    console.log("user", user);
 
     dispatch(loginSuccess(user.jwt));
   } catch (error) {
+    dispatch(showAlert("Login failed", "error"));
     dispatch(loginFailure(error.message));
   }
 };
@@ -69,7 +72,6 @@ export const getUser = (jwt) => async (dispatch) => {
       },
     });
     const user = response.data;
-    console.log("user", user);
 
     dispatch(getUserSuccess(user));
   } catch (error) {
@@ -80,4 +82,5 @@ export const getUser = (jwt) => async (dispatch) => {
 export const logout = () => (dispatch) => {
   dispatch({ type: LOGOUT, payload: null });
   localStorage.clear();
+  dispatch(showAlert("You have logged out!", "error"));
 };
